@@ -1,0 +1,23 @@
+
+<div class="textWrapper">
+<h1>Help us to free Skateaparks from Scooter! 🛴</h1>
+<h3 id="infoText">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat impedit dolorem blanditiis eveniet dignissimos saepe est, modi itaque odio corporis eius cumque eligendi ad, delectus non ducimus minus id dicta.</h3>
+</div>
+<form method="POST" >
+{{#unless validInfo}}
+    {{> error}}
+{{/unless}}
+<input name="firstName" type="text" id="firstName" placeholder="First Name">
+<input name="lastName" type="text" id="lastName" placeholder="Last Name">
+<canvas id="canvas"></canvas>
+<input name="signature" id="hidden" type="hidden" >
+<button id="submit">Sign Petition</button>
+</form>
+
+<script src="/script.js"></script>
+
+
+
+{{!-- Two text input fields for the user’s first and last name
+A rectangle canvas element for signing
+A button for submitting these values --}}
