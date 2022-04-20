@@ -6,9 +6,14 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-    background-size: 5000px 5000px;
-    animation: gradient 25s ease infinite;
+    /* background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab); */
+    background: linear-gradient(-45deg, white, #23d5ab, #23a6d5);
+    /* background-size: 5000px 5000px; */
+    background-size: 1000% 1000%;
+    animation: gradient 30s ease infinite;
+    /* margin: 0;
+    padding: 0; */
+    cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'  width='40' height='48' viewport='0 0 100 100' style='fill:black;font-size:24px;'><text y='50%'>🛹</text></svg>") 16 0, auto;
 }
 
 @keyframes gradient {
@@ -27,6 +32,7 @@ canvas {
     height: 150px;
     width: 300px;
     border: white 3px solid;
+    cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'  width='40' height='48' viewport='0 0 100 100' style='fill:black;font-size:24px;'><text y='50%'>✍️</text></svg>") 16 0, auto;
 }
 
 input {
@@ -48,6 +54,7 @@ button {
     height: 35px;
     border-radius: 5px;
     font-weight: bold;
+    cursor: pointer;
 }
 
 .textWrapper {
@@ -59,12 +66,14 @@ button {
 }
 
 #circle1 {
-    height: 700px;
-    width: 700px;
+    height: 1000px;
+    width: 1000px;
     border-radius: 50%;
-    border: rgba(255, 255, 255, 0.653) 7px solid;
+    border: rgba(255, 255, 255, 0.653) 4px solid;
     position: absolute;
     z-index: -1;
-    left: -200px;
+    left: -300px;
     top: 50px;
+    background: linear-gradient(-45deg, rgba(255, 255, 255, 0.794), #23d5abbe, #23a5d5bb);
+    animation: gradient 5s ease infinite;
 }

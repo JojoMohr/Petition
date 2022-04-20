@@ -4,6 +4,8 @@ const db = require('./database/db');
 // const validInfo = require("./validInfo.js")
 const blancCanvas = require("./blancCanvas.json");
 
+
+
 const { engine } = require('express-handlebars');
 app.engine('handlebars', engine());
 app.set('view engine', 'handlebars');
@@ -14,33 +16,50 @@ app.use(express.urlencoded({
 }));
 
 
+////////// REQUIERE COOKIE-SESSION ///////////
+const cookieSession = require('cookie-session');
+
+app.use(cookieSession({
+    secret: `skateordie`,
+    maxAge: 1000 * 60 * 60 * 24 * 14
+}));
+/////////////////////////////////////////////
 
 app.get('/', (req, res) => {
-    console.log('Petition page got GOT REQUESTED 🟡');
-
     res.render("petition", { validInfo: true });
+
+
 })
 
 app.get("/thanks", (req, res) => {
-    console.log("Thanks Page got requested 🟡")
+    const sessionId = req.session.id
     res.render("thanks")
 })
 app.get("/signers", (req, res) => {
-    console.log("Signers Page got requested 🟡")
     res.render("signers")
 })
 
 
 app.post('/', function(req, res) {
-    let { firstName, lastName, signiture } = req.body;
+    let { firstName, lastName, signature } = req.body;
+    db.addSign(firstName, lastName, signature)
+        .then(({ rows }) => {
+            req.session.id = rows[0].id
+            console.log('rows: ', rows);
+        })
+        .catch(err => {
+            console.log('err: ', err);
+            res.sendStatus(500);
+        });
     console.log(req.body)
-    if (validInfo(firstName, lastName, signiture) == false) {
+    if (validInfo(firstName, lastName, signature) == false) {
         res.render("petition", { validInfo: false })
+
     } else {
-        res.redirect("/thanks")
+        res.redirect(301, "/thanks")
     }
 
-    validInfo(firstName, lastName, signiture)
+    validInfo(firstName, lastName, signature)
         // res.send(JSON.stringify(req.body));
 });
 
@@ -54,6 +73,9 @@ function validInfo(firstName, lastName, signature) {
         return true
     }
 }
+
+
+
 
 
 app.listen(8080, () => console.log("Listening ✅"));
