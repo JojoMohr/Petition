@@ -1,20 +1,14 @@
-console.log("TEST")
+/////////////////////// CANVAS ////////////////////
 
 let canvas = document.querySelector("canvas")
 let ctx = canvas.getContext("2d");
 const submitButton = document.querySelector("#submit")
     // const hiddenInput = document.querySelector("#hidden").value
 
-/////// CANVAS ////////////////////
-function signData() {
-    document.querySelector('[type="hidden"]').value = canvas.toDataURL();
-    console.log(canvas.toDataURL());
-}
-submitButton.addEventListener("click", signData)
-
 // SET COORDINATES //////////
 let coord = { x: 0, y: 0 };
-// start registering our drawing
+
+////////// Start registering our drawing////////////////
 canvas.addEventListener("mousedown", start);
 
 function start(event) {
@@ -27,14 +21,19 @@ function reposition(event) {
     coord.x = event.clientX - canvas.offsetLeft - 12;
     coord.y = event.clientY - canvas.offsetTop + 30;
 }
-// stop the drawing
+////////////////// stop the drawing ////////////////////////
 canvas.addEventListener("mouseup", stop);
 
 function stop() {
     canvas.removeEventListener('mousemove', draw);
 }
 
+//////////////// DRAW FUNCTION //////////////////////////////
+let drawn = false;
+
 function draw(event) {
+    // Set drawn to true 
+    drawn = true;
     // begin a new path.
     ctx.beginPath();
     // set the line width to X pixels.
@@ -52,4 +51,12 @@ function draw(event) {
     //LOGGING OUR POSITION
     // console.log(coord)
     // console.log("DRAW FUNCTION GOT CALLED")
+}
+/////// ADD IMAGE URL DATA FOR THE CANVAS //////////////////
+submitButton.addEventListener("click", signData)
+
+function signData() {
+    if (!drawn) return
+    document.querySelector('[type="hidden"]').value = canvas.toDataURL();
+    console.log(canvas.toDataURL());
 }
