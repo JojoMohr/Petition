@@ -19,6 +19,7 @@ app.use(express.urlencoded({
 
 ////////// REQUIERE COOKIE-SESSION ///////////////////////////////////
 const cookieSession = require('cookie-session');
+const { request } = require('express');
 app.use(cookieSession({
     // the secret string helps to encode
     secret: `noscooters`,
@@ -31,9 +32,9 @@ app.use(cookieSession({
 }));
 ////////////  GET REGUESTS  /////////////////////////////////////////////////////////////    
 ///////////////////////////////////////////////////////////////////////////////////////////
-/// REDIRECT TO PETITION PAGE IF / GET REQUESTED    
+// REDIRECT TO PETITION PAGE IF / GET REQUESTED    
 app.get("/", (req, res) => {
-    res.redirect("/petition")
+    res.redirect("/register")
 })
 
 //////////// PETITION PAGE ////////
@@ -43,12 +44,12 @@ app.get('/petition', (req, res) => {
         res.redirect("/thanks")
         return
     }
-    res.render("petition", { validInfo: true });
+    res.render("petition", { validSig: true });
 })
 
 //////////// REGISTER PAGE ////////
 app.get("/register", (req, res) => {
-    res.render("register")
+    res.render("register", { validInfo: !req.query.error })
 })
 
 
@@ -74,10 +75,12 @@ app.get("/thanks", (req, res) => {
             let { firstname, lastname, signature } = rows[0]
                 //count all id's from signitures giving back the number of rows
             db.getSigCount().then(({ rows }) => {
-                const numberOfSigners = rows[0].count
-                    // render the "thanks" page and
-                    // pass object with 4 properties to it, the handlebars now have access to them 
-                res.render("thanks", { numberOfSigners, firstname, lastname, signature })
+                // const numberOfSigners = rows[0].count
+                // console.log(numberOfSigners);
+                // render the "thanks" page and
+                console.log(rows);
+                // pass object with 4 properties to it, the handlebars now have access to them 
+                res.render("thanks", { firstname, lastname, signature })
                     // catch possible error
             }).catch((error) => {
                 console.log(error)
@@ -92,7 +95,8 @@ app.get("/thanks", (req, res) => {
 
         // IF THERE IS NO COOKIE, REDIRECT TO /
     } else {
-        res.redirect("/");
+        // ❌❌❌❌❌
+        res.render("thanks");
     }
 })
 
@@ -118,46 +122,91 @@ app.get("/signers", (req, res) => {
 
 //////////////// POST REQUEST /////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////
+
+//////////////// POST ON LOGIN ////////////////////
+
 app.post("/login", function(req, res) {
     console.log("POST ON LOGIN📝")
+    let { email, password } = req.body;
+    if (email == "" || password == "") {
+        console.log("EMAIL OR PW MISSING ❌")
+        return false
+    }
+
+    db.login(req.body).then(user => {
+
+        if (!user) {
+            console.log("CREDENTIALS WRONG OR USER DOESNT EXIST ❌")
+            res.redirect("/login")
+            return
+        }
+        console.log("LOGGED IN ✅")
+        req.session.userId = user.id
+            // req.session.userName = user
+        let firstname = user.firstname
+
+        res.render("thanks", { firstname })
+
+        console.log("LOGGED USER", user);
+    })
+
 })
 
 
+
+
+//////////////// POST ON REGISTER ////////////////////
 app.post('/register', function(req, res) {
     console.log("POST ON REGISTER 📝")
+    let { firstname, lastname, email, password } = req.body;
 
-    // decunstruct names and signature from the req.body
-    let { firstName, lastName, signature } = req.body;
     // if the form is not filled correctly, render petition with false
-    if (validInfo(firstName, lastName, signature) == false) {
-        res.render("petition", { validInfo: false })
-
-
-    } else {
-        // call addSign with passed arguments
-        db.addSign(firstName, lastName, signature)
-            .then(({ rows }) => {
-                // store the id in a cookie
-                req.session.signID = rows[0].id
-                console.log("⬆️ Upload Complete!!")
-                res.redirect("/thanks")
-            })
-            .catch(error => {
-                console.log("error", error);
-                res.sendStatus(500);
-            });
-
+    if (validInfo(firstname, lastname, email, password) == false) {
+        res.redirect("/register?error=true")
+        return
     }
+    // call createUser with passed arguments
+    db.createUser(req.body)
+        .then(({ rows }) => {
+            // store the id in a cookie
 
-    validInfo(firstName, lastName, signature)
+            req.session.userId = rows[0].id
+            console.log("⬆️ Upload Complete!!")
+            console.log("ROWS", rows);
+
+            res.redirect("/petition")
+        })
+        .catch(error => {
+            res.render("register")
+            console.log("USER EXISTS ALREADY EXISTS ❌", error);
+
+            // hint: error.constraint === "users_email_key"
+            // is your friend!
+            // res.sendStatus(500);
+        });
 });
+
+// POST SIGNATURE PAGE 
+app.post("/petition", function(req, res) {
+    let { signature } = req.body;
+    console.log("📥", req.body)
+    if (validSig(signature) == false) {
+        console.log("SIGNATURE MISSING! ❌ 📝")
+        res.redirect("/petition?error=true")
+        return
+    }
+    console.log("SIGNED✅ 📝!!")
+    res.render("thanks", { signature })
+});
+
+
 
 
 ///// VALID IF FORM HAS BEEN FILLED CORRECTLY////////
 
-function validInfo(firstName, lastName, signature) {
+function validSig(signature) {
     // Check if All fields are filled 
-    if (firstName == "" || lastName == "" || signature == "") {
+    if (signature == "") {
         console.log("Error❌")
         return false
     } else {
@@ -165,6 +214,19 @@ function validInfo(firstName, lastName, signature) {
         return true
     }
 }
+
+function validInfo(firstname, lastname, email, password) {
+    // Check if All fields are filled 
+    if (firstname == "" || lastname == "" || email == "" || password == "") {
+        console.log("Error❌")
+        return false
+    } else {
+        console.log("✅✅✅")
+        return true
+    }
+}
+
+// function vadigLogin(email, password)
 
 ////////////  START SERVER  //////////////             
 app.listen(8080, () => console.log("Listening ✅"));

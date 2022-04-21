@@ -1,20 +1,29 @@
-// REQUIERE THE $1 SYNTAX FOR SECURITY MATTERS
+// REQUIERE DRIVER
 const spicedPg = require('spiced-pg');
 
 // db equals your Petition Postgres Server ////////
 const db = spicedPg('postgres:postgres:postgres@localhost:5432/petition');
 
 // module.exports.getAllCities = () => db.query('SELECT * FROM cities');
+const bcrypt = require("bcryptjs");
+
+function hashPassword(password) {
+    return bcrypt.genSalt().then((salt) => {
+        return bcrypt.hash(password, salt);
+    });
+}
+
+
 
 
 ////////// INSERT NEW ROW IN SIGNITURES TABLE /////////////
-module.exports.addSign = (firstName, lastName, signature) => {
+module.exports.addSign = (firstname, lastname, signature) => {
     const query = `
-        INSERT INTO signatures (firstName, lastName, signature)
+        INSERT INTO signatures (firstname, lastname, signature)
         VALUES ($1, $2, $3)
         RETURNING *
     `;
-    const params = [firstName, lastName, signature];
+    const params = [firstname, lastname, signature];
     return db.query(query, params);
 }
 
@@ -28,4 +37,50 @@ module.exports.getSigCount = () => {
 
 module.exports.getSigById = (sessionId) => {
     return db.query(`SELECT * FROM signatures WHERE id = ${sessionId}`);
+}
+
+module.exports.createUser = ({ firstname, lastname, email, password }) => {
+    return hashPassword(password).then(passwordhash => {
+            const query = `
+        INSERT INTO users (firstname, lastname, email, passwordhash)
+        VALUES ($1, $2, $3, $4)
+        RETURNING *
+    `;
+            const params = [firstname, lastname, email, passwordhash];
+            return db.query(query, params);
+        })
+        // hash the password from the parameters
+        // then insert the relevant data into the database
+        // remember RETURNING * at the end of the query!
+        // return the right created row
+}
+
+
+module.exports.login = ({ email, password }) => {
+    //// first check if we have a user with the given email in the password
+    return this.getUserByEmail({ email }).then(user => {
+            if (!user) {
+                return false
+            }
+            console.log(user)
+            return bcrypt.compare(password, user.passwordhash).then(match => {
+                if (!match) {
+                    return false;
+                } else {
+                    return user
+                }
+            })
+        })
+        // (you may want to write a getUserByEmail function)
+        // if not, return null
+        // then check if the found user password_hash matches the given password
+        // if not, return null
+        // else, return the user
+}
+
+module.exports.getUserByEmail = ({ email }) => {
+    return db.query(`SELECT * FROM users WHERE email = $1`, [email]).then(result => {
+        return result.rows[0];
+    })
+
 }

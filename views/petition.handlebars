@@ -2,10 +2,10 @@
 <h2>Please Sign Below!</h2>
 <canvas id="canvas"></canvas>
 <input name="signature" id="hidden" type="hidden" >
-
+{{#unless validSig}}
+    {{> error}}
+{{/unless}}
 <button id="submit">Sign Petition</button>
-<img src="{{signature}}" alt="Your Signature">
-
 </form>
 <script src="/script.js"></script>
 
