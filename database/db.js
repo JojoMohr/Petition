@@ -1,9 +1,13 @@
 // REQUIERE THE $1 SYNTAX FOR SECURITY MATTERS
 const spicedPg = require('spiced-pg');
+
+// db equals your Petition Postgres Server ////////
 const db = spicedPg('postgres:postgres:postgres@localhost:5432/petition');
 
 // module.exports.getAllCities = () => db.query('SELECT * FROM cities');
 
+
+////////// INSERT NEW ROW IN SIGNITURES TABLE /////////////
 module.exports.addSign = (firstName, lastName, signature) => {
     const query = `
         INSERT INTO signatures (firstName, lastName, signature)

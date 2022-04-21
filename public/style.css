@@ -35,11 +35,11 @@ canvas {
     cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'  width='40' height='48' viewport='0 0 100 100' style='fill:black;font-size:24px;'><text y='50%'>✍️</text></svg>") 16 0, auto;
 }
 
-input {
+.formWrapper {
     width: 100%;
     height: 25px;
     border-radius: 5px;
-    border: white 2px solid;
+    /* border: white 2px solid; */
 }
 
 form {
@@ -51,10 +51,14 @@ form {
 }
 
 button {
+    /* position: absolute; */
+    top: 600px;
+    left: 600px;
     height: 35px;
     border-radius: 5px;
     font-weight: bold;
     cursor: pointer;
+    /* animation: moveButton 1s ease infinite; */
 }
 
 .textWrapper {
@@ -76,4 +80,68 @@ button {
     top: 50px;
     background: linear-gradient(-45deg, rgba(255, 255, 255, 0.794), #23d5abbe, #23a5d5bb);
     animation: gradient 5s ease infinite;
+    animation: moveCirlce 20s ease infinite;
+}
+
+@keyframes moveButton {
+    0% {
+        left: 600px;
+    }
+    25% {
+        left: 300px;
+    }
+    50% {
+        left: 600px;
+    }
+    75% {
+        left: 900px;
+    }
+    100% {
+        left: 600px;
+    }
+}
+
+@keyframes moveCirlce {
+    0% {
+        left: 0px;
+        top: 0px;
+        height: 900px;
+        width: 900px;
+    }
+    25% {
+        left: 200px;
+        top: 100px;
+        height: 800px;
+        width: 800px;
+    }
+    35% {
+        left: 200px;
+        top: 150px;
+        height: 700px;
+        width: 700px;
+    }
+    50% {
+        left: 200px;
+        top: 200px;
+        height: 600px;
+        width: 600px;
+    }
+    60% {
+        left: 150px;
+        top: 200px;
+        height: 700px;
+        width: 700px;
+    }
+    75% {
+        left: 100px;
+        top: 200px;
+        height: 800px;
+        width: 800px;
+    }
+    100% {
+        left: 0px;
+        top: 100px;
+        height: 1000px;
+        width: 1000px;
+    }
 }

@@ -1,4 +1,4 @@
-const canvas = document.getElementById("canvas");
+const canvas = document.querySelectorAll("#canvas");
 const ctx = canvas.getContext("2d");
 
 let coord = { x: 0, y: 0 };
