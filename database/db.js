@@ -17,18 +17,22 @@ function hashPassword(password) {
 
 
 ////////// INSERT NEW ROW IN SIGNITURES TABLE /////////////
-module.exports.addSign = (firstname, lastname, signature) => {
+module.exports.addSign = (userId, signature) => {
     const query = `
-        INSERT INTO signatures (firstname, lastname, signature)
-        VALUES ($1, $2, $3)
+        INSERT INTO signatures (user_id, signature)
+        VALUES ($1, $2)
         RETURNING *
     `;
-    const params = [firstname, lastname, signature];
+    const params = [userId, signature];
     return db.query(query, params);
 }
 
 module.exports.getSign = () => {
-    return db.query("SELECT * FROM signatures")
+    return db.query(
+        `SELECT users.firstname, users.lastname, profiles.city, profiles.url
+FROM users 
+FULL OUTER JOIN  profiles ON users.id = profiles.user_id 
+INNER JOIN signatures ON users.id = signatures.user_id;`)
 }
 
 module.exports.getSigCount = () => {
@@ -55,6 +59,16 @@ module.exports.createUser = ({ firstname, lastname, email, password }) => {
         // return the right created row
 }
 
+
+module.exports.newProfile = (age, city, url, userId) => {
+    const query = `
+        INSERT INTO profiles (age, city, url, user_id)
+        VALUES ($1, $2, $3, $4)
+        RETURNING *
+    `;
+    const params = [age, city, url, userId];
+    return db.query(query, params);
+};
 
 module.exports.login = ({ email, password }) => {
     //// first check if we have a user with the given email in the password

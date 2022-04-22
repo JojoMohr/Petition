@@ -30,7 +30,7 @@ app.use(cookieSession({
     //that domain unless user  is viewing a page served by that domain.
     sameSite: true
 }));
-////////////  GET REGUESTS  /////////////////////////////////////////////////////////////    
+// GET REGUESTS  /////////////////////////////////////////////////////////////    
 ///////////////////////////////////////////////////////////////////////////////////////////
 // REDIRECT TO PETITION PAGE IF / GET REQUESTED    
 app.get("/", (req, res) => {
@@ -40,35 +40,51 @@ app.get("/", (req, res) => {
 //////////// PETITION PAGE ////////
 app.get('/petition', (req, res) => {
     // IF THERE IS ALREADY A COOKIE REDIRECT DIRECTRLY TO /THANKS
+    if (!req.session.userId) {
+        console.log("NO 🍪 REDIRECT RO REGISTER")
+        res.redirect("/register")
+        return
+    }
     if (req.session.signID) {
         res.redirect("/thanks")
         return
     }
+
     res.render("petition", { validSig: true });
 })
 
-//////////// REGISTER PAGE ////////
+// GET ////////// REGISTER PAGE ////////
 app.get("/register", (req, res) => {
     res.render("register", { validInfo: !req.query.error })
 })
 
 
-//////////// LOGIN PAGE ////////
-
+// GET ////////// LOGIN PAGE ////////
 app.get("/login", (req, res) => {
-        res.render("login")
-    })
-    //////////// SIGNATURE PAGE ////////
+    res.render("login")
+})
+
+// GET ////////// SIGNATURE PAGE ////////
 app.get("/signature", (req, res) => {
+    if (!req.session.userId) {
+        console.log("NO 🍪 REDIRECT TO REGISTER")
+        res.redirect("/register")
+        return
+    }
     res.render("signature")
 })
 
-//////////// THANKS PAGE ////////
+// GET ////////// THANKS PAGE ////////
 app.get("/thanks", (req, res) => {
     // IF THERE IS A COOKIE RENDER /THANKS
-    if (req.session.signID) {
+    if (!req.session.userId) {
+        console.log("NO 🍪 REDIRECT TO REGISTER")
+        res.redirect("/register")
+        return
+    }
+    if (req.session.userId) {
         // store the current id in a variable
-        const currentId = req.session.signID;
+        const currentId = req.session.userId;
         // pass currentId to getSigById fctn  
         db.getSigById(currentId).then(({ rows }) => {
             //deconstruct names and sig from the row
@@ -96,18 +112,23 @@ app.get("/thanks", (req, res) => {
         // IF THERE IS NO COOKIE, REDIRECT TO /
     } else {
         // ❌❌❌❌❌
+        console.log("THANKS HAS BEEN REQUESTED")
+
         res.render("thanks");
     }
 })
 
-//////////// SIGNERS PAGE ///////
+// GET ////////// SIGNERS PAGE ///////
 app.get("/signers", (req, res) => {
     // if there are cookies 
-    if (req.session.signID) {
-        // get the infos of the signitures table  
+    console.log("SIGNERS GOT REQUESTED")
+    if (req.session.userId) {
+        console.log("COOKIES ARE THERE ✅ 🍪")
+            // get the infos of the signitures table  
         db.getSign().then(({ rows }) => {
-            // pass the all rows as argument to the signers handlebar,
-            // here we cann loop through all rows and display only the names 
+            console.log("ROWS ➡", rows)
+                // pass the all rows as argument to the signers handlebar,
+                // here we cann loop through all rows and display only the names 
             res.render("signers", { rows })
         }).catch((error) => {
             console.log(error)
@@ -115,15 +136,32 @@ app.get("/signers", (req, res) => {
         });
         // if no cookies then redirect to "/"
     } else {
+        console.log("NO COOKIES DETECTED ")
         res.redirect("/")
     }
+})
+
+// GET ////////// PROFILE PAGE ///////
+app.get("/profile", function(req, res) {
+    if (!req.session.userId) {
+        console.log("NO 🍪 REDIRECT TO REGISTER")
+        res.redirect("/register")
+        return
+    }
+    console.log("Profil Page has been requested ")
+    res.render("profile")
+})
+
+// GET ////////// SIGNERS/:CITY PAGE ///////
+app.get("/signers/:city", function(req, res) {
+
 })
 
 
 //////////////// POST REQUEST /////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-//////////////// POST ON LOGIN ////////////////////
+//////////////// POST ON LOGIN //////////////////////
 
 app.post("/login", function(req, res) {
     console.log("POST ON LOGIN📝")
@@ -152,10 +190,7 @@ app.post("/login", function(req, res) {
 
 })
 
-
-
-
-//////////////// POST ON REGISTER ////////////////////
+//POST ON REGISTER ////////////////////////////////
 app.post('/register', function(req, res) {
     console.log("POST ON REGISTER 📝")
     let { firstname, lastname, email, password } = req.body;
@@ -174,7 +209,7 @@ app.post('/register', function(req, res) {
             console.log("⬆️ Upload Complete!!")
             console.log("ROWS", rows);
 
-            res.redirect("/petition")
+            res.redirect("/profile")
         })
         .catch(error => {
             res.render("register")
@@ -186,24 +221,51 @@ app.post('/register', function(req, res) {
         });
 });
 
-// POST SIGNATURE PAGE 
+// POST SIGNATURE PAGE ///////////////////////////////
 app.post("/petition", function(req, res) {
     let { signature } = req.body;
-    console.log("📥", req.body)
+    // ❌❌❌ NEED TO ADD THE SIGNITURE TO TABLE
+    // console.log("📥", req.body)
     if (validSig(signature) == false) {
         console.log("SIGNATURE MISSING! ❌ 📝")
         res.redirect("/petition?error=true")
         return
     }
     console.log("SIGNED✅ 📝!!")
+    db.addSign(req.session.userId, signature).then(() => {
+        console.log("Signature has been added to Database")
+    })
     res.render("thanks", { signature })
 });
 
 
+// POST ON PROFILE ////////////////////////////////////
+app.post("/profile", function(req, res) {
 
+    // ❌ ❌ ❌  VALIDATE IF HTTP IS ENTERED!!!!!
+    // if (!req.body.url.startsWith("https")) {
+    //     // res.sendStatus(500);
+    //     res.render("profile", false)
+    // }
+    console.log("POST HAS BEEN MADE ON PROFILE 👨🏽‍⚕️")
+    let { age, city, url } = req.body;
+    // ADD EVEN IF NOT EVERYTHING IS FILLED 
+    console.log(age, city, url, req.session.userId)
+    db.newProfile(age, city, url, req.session.userId).then(() => {
+        res.redirect("/petition")
+    })
+
+})
+
+
+
+
+
+
+//////////////////// VALIDIDATION//////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
 
 ///// VALID IF FORM HAS BEEN FILLED CORRECTLY////////
-
 function validSig(signature) {
     // Check if All fields are filled 
     if (signature == "") {
@@ -227,6 +289,13 @@ function validInfo(firstname, lastname, email, password) {
 }
 
 // function vadigLogin(email, password)
+
+
+
+
+
+
+
 
 ////////////  START SERVER  //////////////             
 app.listen(8080, () => console.log("Listening ✅"));
