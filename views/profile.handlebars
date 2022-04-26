@@ -6,8 +6,12 @@
 <input name="city" type="text" placeholder="Enter your city">
 <input name="url" type="text" placeholder="Website URL">
 <button>Update Profile</button>
-</form>
-{{#unless error}}
-    {{> error}}
-{{/unless}}
+<a id="edit" href="/profile/edit">EDIT PROFILE</a>
 </div>
+</form>
+<form method="POST">
+<button id="skip">SKIP</button>
+</form>
+{{!-- {{#unless error}}
+    {{> error}}
+{{/unless}} --}}

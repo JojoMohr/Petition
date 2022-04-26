@@ -60,7 +60,8 @@ module.exports.createUser = ({ firstname, lastname, email, password }) => {
 }
 
 
-module.exports.newProfile = (age, city, url, userId) => {
+module.exports.newProfile = ({ age, city, url }, userId) => {
+    console.log("last: ", { age, city, url }, userId);
     const query = `
         INSERT INTO profiles (age, city, url, user_id)
         VALUES ($1, $2, $3, $4)
@@ -98,3 +99,74 @@ module.exports.getUserByEmail = ({ email }) => {
     })
 
 }
+module.exports.getSignersByCity = ({ city }) => {
+    console.log('City in db file ->', city)
+    const query = `SELECT users.firstname AS first_name, users.lastname AS last_name, profiles.city AS city, profiles.url AS url
+        FROM users 
+        JOIN signatures
+        ON users.id = signatures.user_id
+        FULL OUTER JOIN profiles
+        ON users.id = profiles.user_id
+        WHERE LOWER(profiles.city) = LOWER($1);`
+
+    const params = [city]
+    return db.query(query, params);
+}
+
+module.exports.getUserProfileById = (userId) => {
+    console.log("This us the user_id", userId)
+    const query = `SELECT users.firstname AS first_name, users.lastname AS last_name, profiles.city AS city, profiles.url AS url, users.email,  profiles.age, profiles.city 
+        FROM users 
+         LEFT JOIN profiles
+        ON users.id = profiles.user_id
+        WHERE users.id = $1`
+
+    const params = [userId]
+    return db.query(query, params);
+}
+
+module.exports.updateUser = (firstname, lastname, email, user_id) => {
+    const query = `UPDATE users
+        SET firstname = $1, lastname = $2, email = $3
+        WHERE id = $4;`
+
+    const params = [firstname, lastname, email, user_id]
+    return db.query(query, params);
+}
+
+
+module.exports.updateUserProfile = (age, url, city, user_id) => {
+    const query =
+        `INSERT INTO profiles (age, url, city, user_id)
+        VALUES ($1,$2,$3, $4)
+        ON CONFLICT (user_id)
+        DO UPDATE SET age = $1, url = $2, city= $3;`
+
+    const params = [age, url, city, user_id]
+    return db.query(query, params);
+}
+
+
+
+module.exports.deleteSignature = (sessionId) => {
+    const query =
+        `DELETE signature FROM signatures WHERE id = ${sessionId};`
+
+    const params = [sessionId]
+    return db.query(query, params);
+}
+
+
+
+// module.exports.updateUserWithPassword = (password, first_name, last_name, email, age, city, url) => {
+//     console.log("DATA AND ID", first_name, last_name, email, age, city, url)
+//     `
+// UPDATE users.passwordhash, users.firstname, users.lastname, profiles.city, profiles.url, users.email, profiles.age, profiles.city
+//         IN users 
+//          LEFT JOIN profiles
+//         ON users.id = profiles.user_id
+//         WHERE users.id = $1`
+
+//     const params = [userId]
+//     return db.query(query, params);
+// }

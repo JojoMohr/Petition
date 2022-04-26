@@ -151,3 +151,21 @@ button {
     gap: 10px;
     flex-direction: column;
 }
+
+#cityList {
+    display: flex;
+    flex-direction: column;
+}
+
+input {
+    height: 50px;
+    width: 200px;
+    border-radius: 20px;
+    border: #23d5ab 3px solid;
+}
+
+#edit {
+    position: absolute;
+    top: 40px;
+    right: 70px;
+}

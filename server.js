@@ -61,6 +61,7 @@ app.get("/register", (req, res) => {
 
 // GET ////////// LOGIN PAGE ////////
 app.get("/login", (req, res) => {
+
     res.render("login")
 })
 
@@ -83,20 +84,21 @@ app.get("/thanks", (req, res) => {
         return
     }
     if (req.session.userId) {
+        console.log("THANKS HAS BEEN REQUESTED ✅")
+
         // store the current id in a variable
         const currentId = req.session.userId;
         // pass currentId to getSigById fctn  
+
         db.getSigById(currentId).then(({ rows }) => {
-            //deconstruct names and sig from the row
+            console.log(rows);
+
             let { firstname, lastname, signature } = rows[0]
                 //count all id's from signitures giving back the number of rows
             db.getSigCount().then(({ rows }) => {
-                // const numberOfSigners = rows[0].count
-                // console.log(numberOfSigners);
-                // render the "thanks" page and
-                console.log(rows);
-                // pass object with 4 properties to it, the handlebars now have access to them 
-                res.render("thanks", { firstname, lastname, signature })
+                const numberOfSigners = rows[0].count
+
+                res.render("thanks", { firstname, lastname, signature, numberOfSigners })
                     // catch possible error
             }).catch((error) => {
                 console.log(error)
@@ -112,7 +114,7 @@ app.get("/thanks", (req, res) => {
         // IF THERE IS NO COOKIE, REDIRECT TO /
     } else {
         // ❌❌❌❌❌
-        console.log("THANKS HAS BEEN REQUESTED")
+        console.log("THANKS HAS BEEN REQUESTED ❌❌❌❌❌")
 
         res.render("thanks");
     }
@@ -126,9 +128,9 @@ app.get("/signers", (req, res) => {
         console.log("COOKIES ARE THERE ✅ 🍪")
             // get the infos of the signitures table  
         db.getSign().then(({ rows }) => {
-            console.log("ROWS ➡", rows)
-                // pass the all rows as argument to the signers handlebar,
-                // here we cann loop through all rows and display only the names 
+            // console.log("ROWS ➡", rows)
+            // pass the all rows as argument to the signers handlebar,
+            // here we cann loop through all rows and display only the names 
             res.render("signers", { rows })
         }).catch((error) => {
             console.log(error)
@@ -139,6 +141,19 @@ app.get("/signers", (req, res) => {
         console.log("NO COOKIES DETECTED ")
         res.redirect("/")
     }
+})
+
+// GET ////////// SIGNERS/:CITY PAGE ///////
+app.get("/signers/:city", function(req, res) {
+    console.log("PARAMS", req.params);
+    db.getSignersByCity(req.params).then((results) => {
+        console.log(results.rows);
+        res.render("city", {
+            city: results.rows[0].city,
+            user: results.rows
+        });
+    })
+
 })
 
 // GET ////////// PROFILE PAGE ///////
@@ -152,10 +167,22 @@ app.get("/profile", function(req, res) {
     res.render("profile")
 })
 
-// GET ////////// SIGNERS/:CITY PAGE ///////
-app.get("/signers/:city", function(req, res) {
-
+// GET EDIT PAGE ///////////////////////////
+app.get("/profile/edit", function(req, res) {
+    console.log("USER ID #️⃣", req.session.userId);
+    db.getUserProfileById(req.session.userId).then(({ rows }) => {
+        console.log("ROWS RESULTS", rows);
+        res.render("edit", {
+            firstname: rows[0].first_name,
+            lastname: rows[0].last_name,
+            city: rows[0].city,
+            url: rows[0].url,
+            age: rows[0].age,
+            email: rows[0].email,
+        });
+    })
 })
+
 
 
 //////////////// POST REQUEST /////////////////////////////////////////////////////////////
@@ -172,6 +199,7 @@ app.post("/login", function(req, res) {
     }
 
     db.login(req.body).then(user => {
+        console.log("REQ BODY", req.body)
 
         if (!user) {
             console.log("CREDENTIALS WRONG OR USER DOESNT EXIST ❌")
@@ -182,8 +210,8 @@ app.post("/login", function(req, res) {
         req.session.userId = user.id
             // req.session.userName = user
         let firstname = user.firstname
-
-        res.render("thanks", { firstname })
+            /// ❌❌❌❌❌ CANT DISPLAY SIGNATURE
+        res.redirect("/thanks")
 
         console.log("LOGGED USER", user);
     })
@@ -211,7 +239,7 @@ app.post('/register', function(req, res) {
 
             res.redirect("/profile")
         })
-        .catch(error => {
+        .catch((error) => {
             res.render("register")
             console.log("USER EXISTS ALREADY EXISTS ❌", error);
 
@@ -249,18 +277,50 @@ app.post("/profile", function(req, res) {
     // }
     console.log("POST HAS BEEN MADE ON PROFILE 👨🏽‍⚕️")
     let { age, city, url } = req.body;
-    // ADD EVEN IF NOT EVERYTHING IS FILLED 
-    console.log(age, city, url, req.session.userId)
-    db.newProfile(age, city, url, req.session.userId).then(() => {
+    const sessionId = req.session.userId
+        // ADD EVEN IF NOT EVERYTHING IS FILLED 
+    console.log("first: ", req.body, req.session.userId)
+    db.newProfile(req.body, req.session.userId).then(() => {
         res.redirect("/petition")
+    }).catch((error) => {
+        console.log(error)
     })
 
 })
 
 
+//app.post()
+
+app.post('/profile/edit', (req, res) =>
+
+    {
+        let { firstname, lastname, email, age, city, url } = req.body;
+        console.log("Changed PROFIL Values 📝 :", firstname, lastname, email, age, city, url)
+
+        Promise.all([
+            db.updateUser(firstname, lastname, email, req.session.userId),
+            db.updateUserProfile(age, url, city, req.session.userId)
+        ]).then(() => {
+            console.log("PROFILE IS UPDATED 📝 ✅")
+            res.redirect("/profile");
+        }).catch((error) => {
+            console.log(error)
+        })
+
+    });
 
 
 
+///// POST ON SIGNATURE/DELETE
+
+app.post("/signature/delete", (req, res) => {
+    console.log("DELETE SIGNATURE ")
+
+    db.deleteSignature(req.session.userId).then(() => {
+        console.log("DELETE SIGNATURE ")
+    })
+    res.redirect("/signature")
+})
 
 //////////////////// VALIDIDATION//////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -287,6 +347,8 @@ function validInfo(firstname, lastname, email, password) {
         return true
     }
 }
+
+
 
 // function vadigLogin(email, password)
 
