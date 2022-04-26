@@ -39,9 +39,7 @@ module.exports.getSigCount = () => {
     return db.query("SELECT COUNT(id) FROM signatures")
 }
 
-module.exports.getSigById = (sessionId) => {
-    return db.query(`SELECT * FROM signatures WHERE id = ${sessionId}`);
-}
+
 
 module.exports.createUser = ({ firstname, lastname, email, password }) => {
     return hashPassword(password).then(passwordhash => {
@@ -113,17 +111,42 @@ module.exports.getSignersByCity = ({ city }) => {
     return db.query(query, params);
 }
 
+// module.exports.getUserProfileById = (userId) => {
+//     console.log("This us the user_id", userId)
+//     const query = `SELECT 
+//     users.firstname AS firstname, 
+//     users.lastname AS lastname
+//     FROM users
+//     JOIN signatures
+//     ON users.id = signatures.user_id
+//     WHERE users.id = $1;`
+
+//     const params = [userId]
+//     return db.query(query, params);
+// }
+
 module.exports.getUserProfileById = (userId) => {
     console.log("This us the user_id", userId)
-    const query = `SELECT users.firstname AS first_name, users.lastname AS last_name, profiles.city AS city, profiles.url AS url, users.email,  profiles.age, profiles.city 
+    const query = `
+    SELECT 
+    signatures.signature,
+    users.firstname AS firstname,
+     users.lastname AS lastname,
+     profiles.city AS city, 
+     profiles.url AS url, 
+     users.email, 
+     profiles.age
         FROM users 
-         LEFT JOIN profiles
-        ON users.id = profiles.user_id
-        WHERE users.id = $1`
+        JOIN signatures
+        ON users.id = signatures.user_id
+        LEFT JOIN profiles
+        ON signatures.user_id = profiles.user_id
+        WHERE users.id = $1;`
 
     const params = [userId]
     return db.query(query, params);
 }
+
 
 module.exports.updateUser = (firstname, lastname, email, user_id) => {
     const query = `UPDATE users
@@ -150,7 +173,7 @@ module.exports.updateUserProfile = (age, url, city, user_id) => {
 
 module.exports.deleteSignature = (sessionId) => {
     const query =
-        `DELETE signature FROM signatures WHERE id = ${sessionId};`
+        `DELETE FROM signatures WHERE signatures.user_id = $1;`
 
     const params = [sessionId]
     return db.query(query, params);

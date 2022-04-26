@@ -28,8 +28,8 @@ CREATE TABLE profiles (
 -- error: null value in column "users_id" of relation "profiles" violates not-null constraint
   user_id INT NOT NULL UNIQUE REFERENCES users(id)
 );
-
+/* 
 SELECT users.firstname, users.lastname, profiles.city, profiles.url
 FROM users 
 FULL OUTER JOIN  profiles ON users.id = profiles.user_id 
-INNER JOIN signatures ON users.id = signatures.user_id
+INNER JOIN signatures ON users.id = signatures.user_id */

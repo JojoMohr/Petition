@@ -1,17 +1,17 @@
 <h1>All the brave people supporting our petition!</h1>
 
-<ol>
+<ol id="signersList">
 
 
 
     {{#rows}}
  <li>
 {{#if url}}
-    <a href="{{url}}">{{firstname}} {{lastname}}</a>
+    <a href="{{url}}">{{firstname}} {{lastname}}</a> -
 {{else}}
-    <p>{{firstname}} {{lastname}}</p>
+    <p>{{firstname}} {{lastname}}</p> 
 {{/if}}
-<a href="/signers/{{city}}">{{city}}</a>
+<a href="/signers/{{city}}">{{city}}</a> 
 </li>
     {{/rows}}
 </ol>

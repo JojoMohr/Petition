@@ -1,13 +1,14 @@
-<h2>Good to see you back, plese LOGIN</h2>
+<h2>Good to see you back, please LOGIN!</h2>
 <form id="loginForm"method="POST">
 
 
 <input name="email" type="text" id="email" placeholder="Email">
-<input name="password" type="text" id="password" placeholder="Password">
+<input name="password" type="password" id="password" placeholder="Password">
 
 <a href="/register">Register</a>
 <button>Login</button>
-{{!-- {{#unless validInfo}}
-    <h1>Try Again Please 📝</h1>
-{{/unless}} --}}
+
 </form>
+{{#if error}}
+    <h2>Wrong Credentials, please try again!</h2>
+{{/if}}
