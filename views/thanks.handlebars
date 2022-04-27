@@ -1,5 +1,9 @@
-<h1>Thanks {{firstname}} for making the world a better place ❤️ 🛹 </h1>
+
+<h1>Thanks {{firstname}} for making the world a better place! </h1>
 
 <img src="{{signature}}" alt="Your Signature">
-<a href="/signers">List of all the {{numberOfSigners}} supporters</a>
+<a id="allsignerslist" href="/signers">List of all the {{numberOfSigners}} supporters</a>
 <a id="edit" href="/profile/edit">EDIT PROFILE</a>
+<form id="logout" method="POST" action="/login">
+<Button> Logout</Button>
+</form>

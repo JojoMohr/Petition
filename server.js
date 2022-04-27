@@ -133,7 +133,8 @@ app.get("/signers/:city", function(req, res) {
             console.log(results.rows);
             res.render("city", {
                 city: results.rows[0].city,
-                user: results.rows
+                user: results.rows[0].user,
+                age: result.rows[0].age
             });
         })
 
@@ -150,33 +151,37 @@ app.get("/profile", function(req, res) {
     })
     // GET EDIT PAGE ///////////////////////////
 app.get("/profile/edit", function(req, res) {
-        console.log("USER ID #️⃣", req.session.userId);
-        db.getUserProfileById(req.session.userId).then((user) => {
-            // console.log("ROWS RESULTS", info);
-            console.log("USER ROOOWS", user.rows[0])
-            const { firstname, lastname, city, url, age, email } = user.rows[0]
-            res.render("edit", {
-                firstname: user.rows[0].firstname,
-                lastname: user.rows[0].lastname,
-                signature: user.rows[0].signature,
-                city: user.rows[0].city,
-                url: user.rows[0].city,
-                age: user.rows[0].age,
-                email: user.rows[0].url,
-            });
-        }).catch((error) => {
-            console.log(error)
-        })
-
+    console.log("USER ID #️⃣", req.session.userId);
+    db.getUserProfileById(req.session.userId).then((user) => {
+        // console.log("ROWS RESULTS", info);
+        console.log("USER ROOOWS", user.rows[0])
+        const { firstname, lastname, city, url, age, email } = user.rows[0]
+        res.render("edit", {
+            firstname: user.rows[0].firstname,
+            lastname: user.rows[0].lastname,
+            signature: user.rows[0].signature,
+            city: user.rows[0].city,
+            url: user.rows[0].url,
+            age: user.rows[0].age,
+            email: user.rows[0].email,
+        });
+    }).catch((error) => {
+        console.log(error)
     })
-    // GET LOGOUT ///////////////////////////////////
-app.get("/logout", function(req, res) {
+
+})
+
+
+//////////////// POST REQUEST /////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
+
+
+// POST LOGOUT ///////////////////////////////////
+app.post("/logout", function(req, res) {
     console.log("LOGGING OUT USER")
     req.session = null
 })
 
-//////////////// POST REQUEST /////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////
 
 //////////////// POST ON LOGIN //////////////////////
 
@@ -258,12 +263,11 @@ app.post("/petition", function(req, res) {
 // POST ON PROFILE ////////////////////////////////////
 app.post("/profile", function(req, res) {
 
-    // ❌ ❌ ❌  VALIDATE IF HTTP IS ENTERED!!!!!
-    // if (!req.body.url.startsWith("https")) {
-    //     res.render("profile", { error: true });
-    //     res.sendStatus(500);
+    if (!req.body.url.startsWith("http")) {
+        res.render("profile", { error: true });
+        res.sendStatus(500);
 
-    // }
+    }
 
     console.log("POST HAS BEEN MADE ON PROFILE 👨🏽‍⚕️")
     console.log("REQ BODY", req.body)
@@ -291,9 +295,10 @@ app.post('/profile/edit', (req, res) =>
         console.log("Changed PROFIL Values 📝 :", firstname, lastname, email, age, city, url)
 
         Promise.all([
-            db.updateUser(firstname, lastname, email, req.session.userId),
-            db.updateUserProfile(age, url, city, req.session.userId)
-        ]).then(() => {
+            db.updateUser({ firstname, lastname, email }, req.session.userId),
+            db.updateUserProfile({ age, url, city }, req.session.userId)
+        ]).then((result) => {
+            console.log("DAS BRAUCHEN WIR!!!", result);
             console.log("PROFILE IS UPDATED 📝 ✅")
             res.redirect("/thanks");
         }).catch((error) => {
@@ -343,4 +348,5 @@ function validInfo(firstname, lastname, email, password) {
 
 ////////////  START SERVER  //////////////    
 
-app.listen(8080, () => console.log("Listening ✅"));
+// app.listen(8080, () => console.log("Listening ✅"));
+app.listen(process.env.PORT || 8080, () => console.log("Listening ✅"));

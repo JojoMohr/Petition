@@ -32,12 +32,28 @@ canvas {
 }
 
 form {
-    height: 500px;
+    /* height: 500px; */
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px
+    gap: 27px;
+    justify-content: center;
 }
+
+
+/* #deleteSignature {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 27px;
+    justify-content: center;
+} */
+
+
+/* justify-content: space-between; */
+
+
+/* margin-top: 20px; */
 
 button {
     /* position: absolute; */
@@ -62,7 +78,6 @@ button {
     height: 1000px;
     width: 1000px;
     border-radius: 50%;
-    border: rgba(255, 255, 255, 0.653) 4px solid;
     position: absolute;
     z-index: -1;
     left: -300px;
@@ -149,6 +164,8 @@ button {
 
 .profileInput {
     display: flex;
+    justify-content: center;
+    align-items: center;
     gap: 10px;
     flex-direction: column;
 }
@@ -165,44 +182,104 @@ input {
     border: #23d5ab 3px solid;
 }
 
-#edit {
-    position: absolute;
-    top: 40px;
-    right: 70px;
-}
-
 #signersList {
     font-size: 25px;
     display: flex;
     align-items: center;
+    justify-content: center;
     flex-direction: column;
     width: 70%;
-    height: 50%;
+    height: 120%;
     background-color: rgba(255, 255, 255, 0.327);
     border-radius: 20px;
+    padding-bottom: 30px;
+}
+
+li {
+    padding: 5px
 }
 
 #cityList {
     font-size: 25px;
     display: flex;
-    flex-direction: column;
     align-items: center;
+    justify-content: center;
+    flex-direction: column;
     width: 70%;
-    height: 50%;
+    height: 120%;
     background-color: rgba(255, 255, 255, 0.327);
     border-radius: 20px;
+    padding-bottom: 30px;
 }
 
 #logout {
     position: absolute;
-    top: 50px;
-    right: 200px
+    top: 25px;
+    right: 76px;
+}
+
+#edit {
+    /* top: 600px;
+    left: 600px; */
+    color: black;
+    border-radius: 5px;
+    background-color: rgb(239, 239, 239);
+    border: rgba(0, 0, 0, 0.678) 2px solid;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    top: 66px;
+    right: 37px;
+    padding: 3px;
+    font-style: normal;
+}
+
+.registerpage {
+    height: 200px;
+    width: 60%;
+    display: grid;
+    grid-template-columns: 2fr 2fr;
+    height: 800px;
+    justify-content: center;
+    justify-items: center;
 }
 
 .infowrapper {
-    width: 50%;
+    width: 80%;
+    font-size: 27px;
+    display: flex;
+    margin: 50px;
+    flex-direction: column;
+    justify-content: center;
 }
 
-.infowrapper p {
+.registerfields {
     font-size: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#heading {
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+#infotext {
+    text-align: start;
+}
+
+.editpage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#allsignerslist {
+    font-size: large;
+    font-weight: bold;
+    color: black;
+    margin-top: 30px;
 }

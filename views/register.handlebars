@@ -1,23 +1,31 @@
+
+<div class="registerpage">
 <div class="infowrapper">
-<h1>BANN ALL SCOOTERS FROM SKATEPARKS</h1>
-<p>Everyone knows the struggle, you are at the park for a sess with the boys and the whole park is packed with scooter kids. This petition is dedicated to change this! 
-    For SCOOTERFREE Parks! 
+    <h1 id="heading">BANN ALL SCOOTERS FROM SKATEPARKS
+
+    </h1>
+    <p id="infotext">Everyone knows the struggle,<br> you are at the park for a sess with the boys and the whole park is packed with scooter kids. <br> 
+    This petition is dedicated to change this! <br>
+    For SCOOTER-FREE Parks! 
+    
 </p>
+
 </div>
+<div class="registerfields">
+   
+    <form  method="POST">
+    <div class="formWrapper"></div>
+    <input name="firstname" type="text" id="firstname" placeholder="First Name">
+    <input name="lastname" type="text" id="lastname" placeholder="Last Name">
+    <input name="email" type="text" id="email" placeholder="Email">
+    <input name="password" type="password" id="password" placeholder="Password">
 
-<h2>Please REGISTER before signing the petition</h2>
-<form  method="POST">
-<div class="formWrapper"></div>
-<input name="firstname" type="text" id="firstname" placeholder="First Name">
-<input name="lastname" type="text" id="lastname" placeholder="Last Name">
-<input name="email" type="text" id="email" placeholder="Email">
-<input name="password" type="password" id="password" placeholder="Password">
-
-<a href="/login">Login</a>
-<button>Register</button>
-{{#unless validInfo}}
-    {{> error}}
-{{/unless}}
+    <a href="/login">Login</a>
+    <button>Register</button>
+    {{#unless validInfo}}
+        {{> error}}
+    {{/unless}}
 </form>
-
+</div>
+</div>
 

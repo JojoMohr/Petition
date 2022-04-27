@@ -1,4 +1,4 @@
-
+<div class="editpage">
 <h2>You can eddit your Profil below!</h2>
 <form method="POST" class="editProfile">
 <input name="firstname" type="text" id="firstname" placeholder="Name" value="{{firstname}}">
@@ -10,7 +10,12 @@
 <input name="url" type="text" placeholder="Website URL"  value="{{url}}">
 <button>Update Profile</button>
 </form>
-<form action="/signature/delete" method="POST">
+<form id="deleteSignature" action="/signature/delete" method="POST">
     <button>DELETE SIGNATURE</button>
+    
 </form>
+<form id="logout" method="POST" action="/login">
+<Button> Logout</Button>
+</form>
+</div>
 
