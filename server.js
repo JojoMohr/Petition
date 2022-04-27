@@ -111,10 +111,10 @@ app.get("/signers", (req, res) => {
         if (req.session.userId) {
             console.log("COOKIES ARE THERE ✅ 🍪")
                 // get the infos of the signitures table  
-            db.getSign().then(({ rows }) => {
-                // console.log("ROWS ➡", rows)
-                // pass the all rows as argument to the signers handlebar,
-                // here we cann loop through all rows and display only the names 
+            db.getUserProfileById(req.session.userId).then(({ rows }) => {
+                console.log("ROWS ➡", rows)
+                    // pass the all rows as argument to the signers handlebar,
+                    // here we cann loop through all rows and display only the names 
                 res.render("signers", { rows })
             }).catch((error) => {
                 console.log(error)
@@ -178,6 +178,7 @@ app.get("/profile/edit", function(req, res) {
 
 // POST LOGOUT ///////////////////////////////////
 app.post("/logout", function(req, res) {
+    res.render("login")
     console.log("LOGGING OUT USER")
     req.session = null
 })
