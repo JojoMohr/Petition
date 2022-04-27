@@ -2,13 +2,12 @@
 const spicedPg = require('spiced-pg');
 
 
-var dbUrl = spicedP(gprocess.env.DATABASE_URL)
-    //|| spicedPg('postgres:postgres:postgres@localhost:5432/petition');
+//'postgres:postgres:postgres@localhost:5432/petition'
 
 
 
 // db equals your Petition Postgres Server ////////
-const db = spicedPg(dbUrl);
+const db = spicedPg(gprocess.env.DATABASE_URL);
 
 
 
