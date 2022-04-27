@@ -1,18 +1,19 @@
- //var dbUrl = process.env.DATABASE_URL || 'postgres://postgres:password@localhost:5432/petition';
- var db = process.env.DATABASE_URL;
-
-
-
-
-
-
-
-
  // REQUIERE DRIVER
  const spicedPg = require('spiced-pg');
 
+
+ let db;
+ if (process.env.DATABASE_URL) {
+     // it means that the app runs on heroku
+     db = spicedPg(process.env.DATABASE_URL);
+ } else {
+     // the app runs locally
+     db = spicedPg("postgres:postgres:postgres@localhost:5432/petition");
+ }
+
+
  // db equals your Petition Postgres Server ////////
- const db = spicedPg(db);
+ //const db = spicedPg(dbUrl);
 
  // module.exports.getAllCities = () => db.query('SELECT * FROM cities');
  const bcrypt = require("bcryptjs");
