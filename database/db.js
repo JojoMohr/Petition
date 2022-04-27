@@ -3,11 +3,11 @@ const spicedPg = require('spiced-pg');
 
 
 
-//const db = spicedPg("postgres:postgres:postgres@localhost:5432/petition");
+const db = spicedPg("postgres:postgres:postgres@localhost:5432/petition");
 
 
 // db equals your Petition Postgres Server ////////
-let db = spicedPg(process.env.DATABASE_URL);
+//let db = spicedPg(process.env.DATABASE_URL);
 
 // module.exports.getAllCities = () => db.query('SELECT * FROM cities');
 const bcrypt = require("bcryptjs");
