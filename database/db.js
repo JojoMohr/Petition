@@ -7,7 +7,7 @@ const spicedPg = require('spiced-pg');
 
 
 // db equals your Petition Postgres Server ////////
-const db = spicedPg(gprocess.env.DATABASE_URL);
+const db = spicedPg(process.env.DATABASE_URL);
 
 
 
