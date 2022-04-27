@@ -350,4 +350,5 @@ function validInfo(firstname, lastname, email, password) {
 ////////////  START SERVER  //////////////    
 
 // app.listen(8080, () => console.log("Listening ✅"));
-app.listen(process.env.PORT || 8080, () => console.log("Listening ✅"));
+//app.listen(process.env.PORT || 8080, () => console.log("Listening ✅"));
+app.listen(process.env.PORT || 8080);
