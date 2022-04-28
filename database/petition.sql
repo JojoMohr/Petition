@@ -25,7 +25,6 @@ CREATE TABLE profiles (
   age INT,
   city VARCHAR,
   url VARCHAR,
--- error: null value in column "users_id" of relation "profiles" violates not-null constraint
   user_id INT NOT NULL UNIQUE REFERENCES users(id)
 );
 /* 

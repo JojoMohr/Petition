@@ -111,7 +111,7 @@ app.get("/signers", (req, res) => {
         if (req.session.userId) {
             console.log("COOKIES ARE THERE ✅ 🍪")
                 // get the infos of the signitures table  
-            db.getUserProfileById(req.session.userId).then(({ rows }) => {
+            db.getSigners().then(({ rows }) => {
                 console.log("ROWS ➡", rows)
                     // pass the all rows as argument to the signers handlebar,
                     // here we cann loop through all rows and display only the names 
@@ -266,27 +266,30 @@ app.post("/profile", function(req, res) {
 
     if (!req.body.url.startsWith("http")) {
         res.render("profile", { error: true });
-        res.sendStatus(500);
 
     }
-
     console.log("POST HAS BEEN MADE ON PROFILE 👨🏽‍⚕️")
     console.log("REQ BODY", req.body)
-    const { age, city, url } = req.body
-    if (age === "" || city === "" || url === "") {
+    let { age, city, url } = req.body
+    if (age == "" || city == "" || url == "") {
         res.redirect("/petition")
+
+    } else {
+        // let { age, city, url } = req.body;
+        const sessionId = req.session.userId
+            // ADD EVEN IF NOT EVERYTHING IS FILLED 
+        console.log("first: ", req.body, req.session.userId)
+
+        if (age === "")
+        //age = null
+            db.newProfile(req.body, req.session.userId).then(() => {
+            res.redirect("/petition")
+        }).catch((error) => {
+            console.log("PROFILE ERRORR", error)
+        })
+
 
     }
-    // let { age, city, url } = req.body;
-    const sessionId = req.session.userId
-        // ADD EVEN IF NOT EVERYTHING IS FILLED 
-    console.log("first: ", req.body, req.session.userId)
-    db.newProfile(req.body, req.session.userId).then(() => {
-        res.redirect("/petition")
-    }).catch((error) => {
-        console.log(error)
-    })
-
 })
 
 app.post('/profile/edit', (req, res) =>
@@ -315,6 +318,8 @@ app.post("/signature/delete", (req, res) => {
     db.deleteSignature(req.session.userId).then(() => {
         console.log("DELETE SIGNATURE ")
         res.redirect("/petition")
+    }).catch((error) => {
+        console.log(error)
     })
 
 })

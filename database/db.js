@@ -1,15 +1,12 @@
 // REQUIERE DRIVER
 const spicedPg = require('spiced-pg');
 
-
-
-//const db = spicedPg("postgres:postgres:postgres@localhost:5432/petition");
-
-
 // db equals your Petition Postgres Server ////////
-let db = spicedPg(process.env.DATABASE_URL);
+const db = spicedPg('postgres:postgres:postgres@localhost:5432/petition');
 
-// module.exports.getAllCities = () => db.query('SELECT * FROM cities');
+//var dbUrl = process.env.DATABASE_URL || 'postgres://postgres:password@localhost:5432/petition';
+
+//module.exports.getAllCities = () => db.query('SELECT * FROM cities');
 const bcrypt = require("bcryptjs");
 
 function hashPassword(password) {
@@ -115,6 +112,19 @@ module.exports.getSignersByCity = ({ city }) => {
     const params = [city]
     return db.query(query, params);
 }
+
+
+module.exports.getSigners = () => {
+    const query = `SELECT users.firstname AS firstname, users.lastname AS lastname, profiles.city AS city, profiles.url AS url, profiles.age
+        FROM users 
+        JOIN signatures
+        ON users.id = signatures.user_id
+        FULL OUTER JOIN profiles
+        ON users.id = profiles.user_id
+`
+    return db.query(query);
+}
+
 
 // module.exports.getUserProfileById = (userId) => {
 //     console.log("This us the user_id", userId)
