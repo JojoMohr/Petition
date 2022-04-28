@@ -132,10 +132,12 @@ app.get("/signers/:city", function(req, res) {
         db.getSignersByCity(req.params).then((results) => {
             console.log(results.rows);
             res.render("city", {
-                city: results.rows[0].city,
-                user: results.rows[0].user,
-                age: result.rows[0].age
-            });
+                firstname: results.rows[0].firstname,
+                lastname: results.rows[0].lastname,
+                city: results.rows[0].city
+            })
+        }).catch((error) => {
+            console.log("ERROR ON CITY", error)
         })
 
     })
