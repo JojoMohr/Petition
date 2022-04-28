@@ -102,7 +102,7 @@ module.exports.getUserByEmail = ({ email }) => {
 }
 module.exports.getSignersByCity = ({ city }) => {
     console.log('City in db file ->', city)
-    const query = `SELECT users.firstname AS first_name, users.lastname AS last_name, profiles.city AS city, profiles.url AS url
+    const query = `SELECT users.firstname AS firstname, users.lastname AS lastname, profiles.city AS city, profiles.url AS url
         FROM users 
         JOIN signatures
         ON users.id = signatures.user_id
