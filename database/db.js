@@ -1,10 +1,11 @@
 // REQUIERE DRIVER
 const spicedPg = require('spiced-pg');
+var dbUrl = process.env.DATABASE_URL || 'postgres://postgres:password@localhost:5432/petition';
 
 // db equals your Petition Postgres Server ////////
-const db = spicedPg('postgres:postgres:postgres@localhost:5432/petition');
+let db = spicedPg(dbUrl);
+//let db = spicedPg('postgres:postgres:postgres@localhost:5432/petition');
 
-//var dbUrl = process.env.DATABASE_URL || 'postgres://postgres:password@localhost:5432/petition';
 
 //module.exports.getAllCities = () => db.query('SELECT * FROM cities');
 const bcrypt = require("bcryptjs");
